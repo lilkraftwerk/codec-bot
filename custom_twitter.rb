@@ -14,15 +14,12 @@ class GarfTwitter
   end
 
   def configure_twitter_client
-
-
-    client = Twitter::REST::Client.new do |config|
+    @client = Twitter::REST::Client.new do |config|
       config.consumer_key = TWITTER_KEY
       config.consumer_secret = TWITTER_SECRET
       config.access_token = ACCESS_TOKEN
       config.access_token_secret = ACCESS_SECRET
     end
-    @client = client
   end
 
   def update(text, file)
@@ -33,6 +30,10 @@ class GarfTwitter
     @tweets = @client.user_timeline(username)
     @username = username
     @profile_image_url = @tweets.first.user.profile_image_url
+  end
+
+  def get_url(username)
+    @client.user(username).profile_image_url
   end
 
   def get_methods
@@ -47,7 +48,17 @@ class GarfTwitter
   end
 end
 
-
-g = GarfTwitter.new
-g.get_tweets('dril')
-g.get_methods
+def get_profile_pic(url, username)
+  begin
+    image = Magick::ImageList.new
+    url.to_s.gsub!('_normal', '')
+    urlimage = open(url)
+    image.from_blob(urlimage.read)
+  rescue OpenURI::HTTPError
+    puts "porblem. retrying..."
+    retry
+  else
+    puts "we made it, writing image"
+    image.write("tmp/#{username}.jpg")
+  end
+end
