@@ -7,7 +7,7 @@ ACCESS_TOKEN ||= ENV["ACCESS_TOKEN"]
 ACCESS_SECRET ||= ENV["ACCESS_SECRET"]
 
 class GarfTwitter
-  attr_reader :tweets, :profile_image_url
+  attr_reader :tweets, :profile_image_url, :username
 
   def initialize
     configure_twitter_client
@@ -31,9 +31,23 @@ class GarfTwitter
 
   def get_tweets(username)
     @tweets = @client.user_timeline(username)
+    @username = username
     @profile_image_url = @tweets.first.user.profile_image_url
+  end
+
+  def get_methods
+    @client.friends('nah_solo').each do |x|
+      puts x.username
+    end
+    # puts @tweets.first.methods
+    # @tweets.each do |tweet|
+      # puts "#retweet: #{tweet.retweet?}"
+      # puts "reply: #{tweet.reply?}"
+    # end
   end
 end
 
 
-
+g = GarfTwitter.new
+g.get_tweets('dril')
+g.get_methods
