@@ -13,6 +13,10 @@ class GarfTwitter
     configure_twitter_client
   end
 
+  def get_friends
+    @client.followers('nah_solo')
+  end
+
   def configure_twitter_client
     @client = Twitter::REST::Client.new do |config|
       config.consumer_key = TWITTER_KEY
@@ -34,17 +38,6 @@ class GarfTwitter
 
   def get_url(username)
     @client.user(username).profile_image_url
-  end
-
-  def get_methods
-    @client.friends('nah_solo').each do |x|
-      puts x.username
-    end
-    # puts @tweets.first.methods
-    # @tweets.each do |tweet|
-      # puts "#retweet: #{tweet.retweet?}"
-      # puts "reply: #{tweet.reply?}"
-    # end
   end
 end
 
