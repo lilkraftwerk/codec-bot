@@ -1,48 +1,31 @@
 require_relative 'mark'
 require_relative 'custom_twitter'
 require_relative 'utilities'
-
+require 'active_support/time'
 require 'open-uri'
 require 'rmagick'
 include Magick
 
 twitter_client = GarfTwitter.new
-markov = MGSMarkov.new
 
-names = %w( dril nah_solo potus flotus vogon )
-
-first_username = 'potus'
-second_username = 'flotus'
-
-first_username = 'nah_solo'
-second_username = 'dril'
-
-s = markov.make_sentence
-s = s.join(' ')
-
-# t.get_tweets(first_username)
-first_url = twitter_client.get_url(first_username)
-second_url = twitter_client.get_url(second_username)
-
-get_profile_pic(first_url, first_username)
-get_profile_pic(second_url, second_username)
-
-# snake = Magick::Image.read("tmp/snake.png")[0]
-
-all_tweets = []
-twitter_client.get_tweets('dril')
-tweets = twitter_client.tweets
-puts tweets.first.metadata
-tweets.each do |tweet|
-  p tweet
-  p tweet.text
-  all_tweets << tweet.text if !tweet.retweet? && !tweet.reply?
+def less_than_ten_minutes_old(tweet)
+  ten_minutes_ago = Time.now.getlocal('+00:00') - 10.minutes
+  tweet.created_at > ten_minutes_ago
 end
 
-puts tweets.first.metadata
-puts tweets.first.created_at
 
-s = all_tweets.shuffle.shift
+
+tweets_to_do = []
+
+g = GarfTwitter.new
+g.get_tweets('dril')
+t = g.tweets
+# t.each do |tweet|
+#   tweets_to_do << tweet if less_than_ten_minutes_old(tweet) && tweet.text.length > 1
+# end
+
+tweets_to_do << t.shuffle.shift
+
 
 avatar_one = Magick::Image.read("dril.jpeg")[0]
 # avatar_one = Magick::Image.read("tmp/#{rand(7)}test.jpg")[0]
@@ -74,17 +57,23 @@ codec_background.composite!(avatar_one, 955, 107, Magick::OverCompositeOp)
 text = Magick::Draw.new
 text.font = "Verdana.ttf"
 
-# word wrap for tweets
-# chosen = split_text(chosen)
-# chosen.gsub!("\n ", "\n")
-
-s = split_text(s)
-
-
-text.annotate(codec_background, 100, 100, 175, 550, s) {
+tweets_to_do.each do |tweet|
+  puts "looping #{tweet}"
+  new_background = codec_background
+  new_text = split_text(tweet.text)
+  new_text.gsub!("\n ", "\n")
+  text.annotate(new_background, 100, 100, 175, 550, new_text) {
         self.fill = 'white'
         self.pointsize = 36
         self.gravity = Magick::WestGravity
     }
+  new_background.write "result.png"
 
-codec_background.write "result.png"
+  File.open('result.png') do |f|
+    twitter_client.update(tweet.url, f)
+  end
+end
+
+
+
+# make it like so that you can dm a link to a tweet as long as it's a reply

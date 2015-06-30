@@ -1,4 +1,6 @@
 require 'twitter'
+require 'active_support/time'
+
 require_relative 'keys'
 
 TWITTER_KEY ||= ENV["TWITTER_KEY"]
@@ -39,6 +41,11 @@ class GarfTwitter
   def get_url(username)
     @client.user(username).profile_image_url
   end
+
+ def update(text, file)
+    @client.update_with_media(text,file)
+  end
+
 end
 
 def get_profile_pic(url, username)
@@ -55,3 +62,4 @@ def get_profile_pic(url, username)
     image.write("tmp/#{username}.jpg")
   end
 end
+
