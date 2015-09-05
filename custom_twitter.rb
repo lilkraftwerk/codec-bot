@@ -68,7 +68,7 @@ class MGSTwitter
 
   def download_avatar(username)
     url = get_url(username)
-    image_location = get_profile_pic(url)
+    image_location = get_profile_pic(url, username)
     image_location
   end
 
@@ -80,7 +80,7 @@ class MGSTwitter
     @client.update_with_media(text,file)
   end
 
-  def get_profile_pic(profile_image_url)
+  def get_profile_pic(profile_image_url, username)
     begin
       image = Magick::ImageList.new
       profile_image_url.to_s.gsub!('_normal', '')
@@ -91,8 +91,8 @@ class MGSTwitter
       retry
     else
       puts "we made it, writing image"
-      image.write("tmp/#{@username}.jpg")
-      "tmp/#{@username}.jpg"
+      image.write("tmp/#{username}.jpg")
+      "tmp/#{username}.jpg"
     end
   end
 end

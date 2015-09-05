@@ -40,7 +40,9 @@ class CodecCreator
 
   def download_avatars
     @avatar_1_location = @client.download_avatar(@first_username)
+    puts @avatar_1_location
     @avatar_2_location = @client.download_avatar(@second_username)
+    puts @avatar_2_location
   end
 
   def create_first_avatar
@@ -70,8 +72,8 @@ class CodecCreator
     @avatar_two = @avatar_two.adaptive_blur(0.5, 1.0)
 
     @codec_background =  Magick::Image.read("emptycodec.png")[0]
-    @codec_background.composite!(@avatar_two, 112, 109, Magick::OverCompositeOp)
-    @codec_background.composite!(@avatar_one, 955, 107, Magick::OverCompositeOp)
+    @codec_background.composite!(@avatar_one, 112, 109, Magick::OverCompositeOp)
+    @codec_background.composite!(@avatar_two, 955, 107, Magick::OverCompositeOp)
   end
 
   def write_random_text
@@ -91,12 +93,12 @@ class CodecCreator
             self.gravity = Magick::WestGravity
         }
 
-    @codec_background.write "miley_cyrus.png"
+    @codec_background.write "results/#{rand(10000)}.png"
   end
 end
 
 options = {
-  first_username: 'nah_solo',
+  first_username: 'dril',
   second_username: 'nah_solo'
 }
 
