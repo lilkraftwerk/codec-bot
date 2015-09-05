@@ -10,7 +10,7 @@ class CodecCreator
   def initialize(options)
     @first_username = options[:first_username]
     @second_username = options[:second_username]
-    @tweet = options[:tweet]
+    @tweet_text = options[:tweet_text]
     @client = MGSTwitter.new
     @markov = MGSMarkov.new
   end
@@ -80,12 +80,11 @@ class CodecCreator
     text = Magick::Draw.new
     text.font = "Verdana.ttf"
 
-    # word wrap for tweets
-    # chosen = split_text(chosen)
-    # chosen.gsub!("\n ", "\n")
-    s = @markov.make_sentence
-    split_sentence = split_text(s)
+    unless @tweet_text
+      @tweet_text = @markov.make_sentence
+    end
 
+    split_sentence = split_text(@tweet_text)
 
     text.annotate(@codec_background, 100, 100, 175, 550, split_sentence) {
             self.fill = 'white'
@@ -93,13 +92,20 @@ class CodecCreator
             self.gravity = Magick::WestGravity
         }
 
-    @codec_background.write "results/#{rand(10000)}.png"
+    filename = "results/#{rand(10000)}.png"
+    @codec_background.write(filename)
+    File.open(filename) do |f|
+      @client.update('text', f)
+  end
   end
 end
 
+names = %w( dril nah_solo wolfpupy potus flotus horse_ebooks ).shuffle
+
 options = {
-  first_username: 'dril',
-  second_username: 'nah_solo'
+  first_username: names.shift,
+  second_username: names.shift,
+  tweet_text: "actually, im not mad. youre the one who is mad. this isf unny to me"
 }
 
 codec = CodecCreator.new(options)

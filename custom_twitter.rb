@@ -96,18 +96,3 @@ class MGSTwitter
     end
   end
 end
-
-# c = MGSTwitter.new
-# c.request_tweets.each do |tweet|
-#   binding.pry
-# end
-# tweet = c.request_tweets.first
-
-# puts tweet.in_reply_to_screen_name if tweet.in_reply_to_screen_name?
-
-class TweetHandler
-  def initialize(tweet)
-    @user = tweet.user
-
-  end
-end
