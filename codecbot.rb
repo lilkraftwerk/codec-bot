@@ -24,6 +24,8 @@ class CodecCreator
     puts "swag me the fuck out"
   end
 
+
+
   def split_text(text)
     split = 47
     orig_array = text.split(' ')
@@ -36,6 +38,10 @@ class CodecCreator
       end
     end
     new_array.join(' ')
+  end
+
+  def get_tweet_text
+
   end
 
   def download_avatars
@@ -100,13 +106,20 @@ class CodecCreator
   end
 end
 
-names = %w( dril nah_solo wolfpupy potus flotus horse_ebooks ).shuffle
 
-options = {
-  first_username: names.shift,
-  second_username: names.shift,
-  tweet_text: "actually, im not mad. youre the one who is mad. this isf unny to me"
-}
+# options = {
+  # first_username: names.shift,
+  # second_username: names.shift,
+  # tweet_text: "actually, im not mad. youre the one who is mad. this isf unny to me"
+# }
 
-codec = CodecCreator.new(options)
-codec.do_it
+
+
+m = MGSTwitter.new
+m.get_mentions
+m.sort_dms
+m.format_results
+m.results.each do |result|
+  codec = CodecCreator.new(result)
+  codec.do_it
+end
