@@ -6,7 +6,7 @@ require 'open-uri'
 require 'rmagick'
 include Magick
 
-twitter_client = GarfTwitter.new
+twitter_client = MGSTwitter.new
 markov = MGSMarkov.new
 
 names = %w( dril nah_solo potus flotus vogon )
@@ -14,8 +14,8 @@ names = %w( dril nah_solo potus flotus vogon )
 first_username = 'potus'
 second_username = 'flotus'
 
-first_username = 'nah_solo'
-second_username = 'dril'
+# first_username = 'nah_solo'
+# second_username = 'dril'
 
 s = markov.make_sentence
 s = s.join(' ')
