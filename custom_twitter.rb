@@ -14,8 +14,6 @@ class MGSTwitter
 
   def initialize
     configure_twitter_client
-    @mentions = @client.mentions_timeline
-    sort_dms
   end
 
   def get_tweet_by_id(id)
@@ -68,6 +66,12 @@ class MGSTwitter
     @profile_image_url = @tweets.first.user.profile_image_url
   end
 
+  def download_avatar(username)
+    url = get_url(username)
+    image_location = get_profile_pic(url)
+    image_location
+  end
+
   def get_url(username)
     @client.user(username).profile_image_url
   end
@@ -76,11 +80,11 @@ class MGSTwitter
     @client.update_with_media(text,file)
   end
 
-  def get_profile_pic
+  def get_profile_pic(profile_image_url)
     begin
       image = Magick::ImageList.new
-      @profile_image_url.to_s.gsub!('_normal', '')
-      urlimage = open(@profile_image_url)
+      profile_image_url.to_s.gsub!('_normal', '')
+      urlimage = open(profile_image_url)
       image.from_blob(urlimage.read)
     rescue OpenURI::HTTPError
       puts "porblem. retrying..."
@@ -88,17 +92,18 @@ class MGSTwitter
     else
       puts "we made it, writing image"
       image.write("tmp/#{@username}.jpg")
+      "tmp/#{@username}.jpg"
     end
   end
 end
 
-c = MGSTwitter.new
-c.request_tweets.each do |tweet|
-  binding.pry
-end
-tweet = c.request_tweets.first
+# c = MGSTwitter.new
+# c.request_tweets.each do |tweet|
+#   binding.pry
+# end
+# tweet = c.request_tweets.first
 
-puts tweet.in_reply_to_screen_name if tweet.in_reply_to_screen_name?
+# puts tweet.in_reply_to_screen_name if tweet.in_reply_to_screen_name?
 
 class TweetHandler
   def initialize(tweet)

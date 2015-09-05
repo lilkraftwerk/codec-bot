@@ -14,6 +14,6 @@ class MGSMarkov
     until arr.join(' ').length < 100
       arr.shift
     end
-    arr
+    arr.join(' ')
   end
 end
