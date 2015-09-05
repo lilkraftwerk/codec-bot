@@ -38,7 +38,7 @@ class CodecCreator
         split += 47
       end
     end
-    new_array.join(' ')
+    new_array.join(' ').gsub!(/\n /, "\n")
   end
 
   def get_tweet_text
@@ -75,17 +75,27 @@ class CodecCreator
   end
 
   def format_codec_background
-    @avatar_one = @avatar_one.adaptive_blur(0.5, 1.0)
-    @avatar_two = @avatar_two.adaptive_blur(0.5, 1.0)
+    @avatar_one = @avatar_one.adaptive_blur(0.7, 1.0)
+    @avatar_two = @avatar_two.adaptive_blur(0.7, 1.0)
+
+    @avatar_one = @avatar_one.blur_image(0.7, 0.7)
+    @avatar_two = @avatar_two.blur_image(0.7, 0.7)
+
+    @avatar_one = @avatar_one.scale(0.1).scale(10)
+    @avatar_two = @avatar_two.scale(0.1).scale(10)
+
+
 
     @codec_background =  Magick::Image.read("emptycodec.png")[0]
-    @codec_background.composite!(@avatar_one, 112, 109, Magick::OverCompositeOp)
-    @codec_background.composite!(@avatar_two, 955, 107, Magick::OverCompositeOp)
+    @codec_background.composite!(@avatar_two, 120, 109, Magick::OverCompositeOp)
+    @codec_background.composite!(@avatar_one, 955, 107, Magick::OverCompositeOp)
   end
 
   def write_random_text
     text = Magick::Draw.new
     text.font = "Verdana.ttf"
+    # text.font = "VCR.ttf"
+    # text.font = "pixel.TTF"
 
     unless @tweet_text
       @tweet_text = @markov.make_sentence
@@ -95,7 +105,7 @@ class CodecCreator
 
     split_sentence = split_text(new_text)
 
-    text.annotate(@codec_background, 100, 100, 175, 550, split_sentence) {
+    text.annotate(@codec_background, 100, 100, 175, 525, split_sentence) {
             self.fill = 'white'
             self.pointsize = 36
             self.gravity = Magick::WestGravity
@@ -105,7 +115,20 @@ class CodecCreator
 
     filename = "results/#{rand(10000)}.png"
     @codec_background.write(filename)
+
+
+    # tries to pixelate text
+    # top = @codec_background.crop(0,0,1280,400)
+    # bottom = @codec_background.crop(0, 400, 1280, 320)
+    # pixel_amount = 0.9
+    # bottom = bottom.scale(10 / pixel_amount).scale(10 * pixel_amount)
+    # top.write('top')
+    # bottom.write('bottom')
+    # i = Magick::ImageList.new('top', 'bottom').append(true)
+    # i.write(filename)
+
     File.open(filename) do |f|
+      puts "locally #{filename}"
       @client.update(text_to_tweet, f)
   end
   end
