@@ -11,6 +11,7 @@ class CodecCreator
     @first_username = options[:first_username]
     @second_username = options[:second_username]
     @tweet_text = options[:tweet_text]
+    @url = options[:url]
     @client = MGSTwitter.new
     @markov = MGSMarkov.new
   end
@@ -90,7 +91,9 @@ class CodecCreator
       @tweet_text = @markov.make_sentence
     end
 
-    split_sentence = split_text(@tweet_text)
+    new_text = @tweet_text.gsub(/https?:\/\/[\S]+/, '')
+
+    split_sentence = split_text(new_text)
 
     text.annotate(@codec_background, 100, 100, 175, 550, split_sentence) {
             self.fill = 'white'
@@ -98,25 +101,21 @@ class CodecCreator
             self.gravity = Magick::WestGravity
         }
 
+    text_to_tweet = "#{@url}\nrequested by @#{@first_username}"
+
     filename = "results/#{rand(10000)}.png"
     @codec_background.write(filename)
     File.open(filename) do |f|
-      @client.update('text', f)
+      @client.update(text_to_tweet, f)
   end
   end
 end
 
 
-# options = {
-  # first_username: names.shift,
-  # second_username: names.shift,
-  # tweet_text: "actually, im not mad. youre the one who is mad. this isf unny to me"
-# }
-
-
-
+# uncomment and it all works
 m = MGSTwitter.new
 m.get_mentions
+m.select_mentions_less_than_an_hour_old
 m.sort_dms
 m.format_results
 m.results.each do |result|

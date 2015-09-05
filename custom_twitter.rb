@@ -21,8 +21,10 @@ class MGSTwitter
     @mentions = @client.mentions_timeline
   end
 
-  def format_requests_for_codec
-
+  def select_mentions_less_than_an_hour_old
+    @mentions = @mentions.select do |mention|
+      mention.created_at > 1.hour.ago
+    end
   end
 
   def get_tweet_by_id(id)
@@ -52,6 +54,7 @@ class MGSTwitter
           requester = tweet.user.screen_name
           id = get_tweet_id(url)
           @results << {
+            url: url,
             tweet: get_tweet(id.to_i),
             first_username: requester
           }
