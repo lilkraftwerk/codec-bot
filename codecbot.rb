@@ -110,28 +110,3 @@ options = {
 
 codec = CodecCreator.new(options)
 codec.do_it
-# s = markov.make_sentence
-# s = s.join(' ')
-
-# t.get_tweets(first_username)
-
-# snake = Magick::Image.read("tmp/snake.png")[0]
-
-# all_tweets = []
-# twitter_client.get_tweets('dril')
-# tweets = twitter_client.tweets
-# puts tweets.first.metadata
-# tweets.each do |tweet|
-  # p tweet
-  # p tweet.text
-  # all_tweets << tweet.text if !tweet.retweet? && !tweet.reply?
-# end
-
-# puts tweets.first.metadata
-# puts tweets.first.created_at
-
-
-
-
-
-#
