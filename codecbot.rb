@@ -96,7 +96,7 @@ class CodecCreator
     @url ||= "UNKNOWN URL"
     text_to_tweet = "#{@url}\nrequested by @#{@first_username}"
 
-    filename = "tpm/#{rand(10000)}.png"
+    filename = "tmp/#{rand(10000)}.png"
     @codec_background.write(filename)
 
     File.open(filename) do |f|
