@@ -2,9 +2,13 @@ require_relative 'mark'
 require_relative 'custom_twitter'
 require_relative 'utilities'
 
+
 require 'open-uri'
 require 'rmagick'
 include Magick
+
+require 'action_view'
+include ActionView::Helpers::TextHelper
 
 class CodecCreator
   def initialize(options)
@@ -26,23 +30,8 @@ class CodecCreator
   end
 
 
-
   def split_text(text)
-    split = 47
-    orig_array = text.split(' ')
-    new_array = []
-    while orig_array.length > 0
-      new_array << orig_array.shift
-      if new_array.join(' ').length > split
-        new_array.push("\n")
-        split += 47
-      end
-    end
-    new_array.join(' ').gsub!(/\n /, "\n")
-  end
-
-  def get_tweet_text
-
+    word_wrap(text, line_width: 47)
   end
 
   def download_avatars
@@ -84,8 +73,6 @@ class CodecCreator
     @avatar_one = @avatar_one.scale(0.1).scale(10)
     @avatar_two = @avatar_two.scale(0.1).scale(10)
 
-
-
     @codec_background =  Magick::Image.read("emptycodec.png")[0]
     @codec_background.composite!(@avatar_two, 120, 109, Magick::OverCompositeOp)
     @codec_background.composite!(@avatar_one, 955, 107, Magick::OverCompositeOp)
@@ -111,6 +98,7 @@ class CodecCreator
             self.gravity = Magick::WestGravity
         }
 
+    @url ||= "UNKNOWN URL"
     text_to_tweet = "#{@url}\nrequested by @#{@first_username}"
 
     filename = "results/#{rand(10000)}.png"
@@ -145,3 +133,4 @@ m.results.each do |result|
   codec = CodecCreator.new(result)
   codec.do_it
 end
+
