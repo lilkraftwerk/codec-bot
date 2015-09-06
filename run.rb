@@ -11,6 +11,3 @@ def run
   end
 end
 
-puts "running"
-run
-puts "done"
