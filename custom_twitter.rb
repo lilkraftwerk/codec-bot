@@ -17,11 +17,18 @@ class MGSTwitter
     @results = []
   end
 
+  def do_it
+    get_mentions
+    select_mentions_less_than_ten_minutes_old
+    sort_dms
+    format_results
+  end
+
   def get_mentions
     @mentions = @client.mentions_timeline
   end
 
-  def select_mentions_less_than_an_hour_old
+  def select_mentions_less_than_ten_minutes_old
     @mentions = @mentions.select do |mention|
       mention.created_at > 1.hour.ago
     end

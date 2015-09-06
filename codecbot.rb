@@ -26,9 +26,8 @@ class CodecCreator
     create_second_avatar
     format_codec_background
     write_random_text
-    puts "swag me the fuck out"
+    puts "done tweetin'"
   end
-
 
   def split_text(text)
     word_wrap(text, line_width: 47)
@@ -81,8 +80,6 @@ class CodecCreator
   def write_random_text
     text = Magick::Draw.new
     text.font = "Verdana.ttf"
-    # text.font = "VCR.ttf"
-    # text.font = "pixel.TTF"
 
     unless @tweet_text
       @tweet_text = @markov.make_sentence
@@ -104,33 +101,13 @@ class CodecCreator
     filename = "results/#{rand(10000)}.png"
     @codec_background.write(filename)
 
-
-    # tries to pixelate text
-    # top = @codec_background.crop(0,0,1280,400)
-    # bottom = @codec_background.crop(0, 400, 1280, 320)
-    # pixel_amount = 0.9
-    # bottom = bottom.scale(10 / pixel_amount).scale(10 * pixel_amount)
-    # top.write('top')
-    # bottom.write('bottom')
-    # i = Magick::ImageList.new('top', 'bottom').append(true)
-    # i.write(filename)
-
     File.open(filename) do |f|
       puts "locally #{filename}"
       @client.update(text_to_tweet, f)
-  end
+    end
   end
 end
 
 
 # uncomment and it all works
-m = MGSTwitter.new
-m.get_mentions
-m.select_mentions_less_than_an_hour_old
-m.sort_dms
-m.format_results
-m.results.each do |result|
-  codec = CodecCreator.new(result)
-  codec.do_it
-end
 
