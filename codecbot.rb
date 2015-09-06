@@ -1,7 +1,5 @@
 require_relative 'mark'
 require_relative 'custom_twitter'
-require_relative 'utilities'
-
 
 require 'open-uri'
 require 'rmagick'
@@ -72,7 +70,7 @@ class CodecCreator
     @avatar_one = @avatar_one.scale(0.1).scale(10)
     @avatar_two = @avatar_two.scale(0.1).scale(10)
 
-    @codec_background =  Magick::Image.read("emptycodec.png")[0]
+    @codec_background =  Magick::Image.read("static/emptycodec.png")[0]
     @codec_background.composite!(@avatar_two, 120, 109, Magick::OverCompositeOp)
     @codec_background.composite!(@avatar_one, 955, 107, Magick::OverCompositeOp)
   end
@@ -98,7 +96,7 @@ class CodecCreator
     @url ||= "UNKNOWN URL"
     text_to_tweet = "#{@url}\nrequested by @#{@first_username}"
 
-    filename = "results/#{rand(10000)}.png"
+    filename = "tpm/#{rand(10000)}.png"
     @codec_background.write(filename)
 
     File.open(filename) do |f|
@@ -107,7 +105,3 @@ class CodecCreator
     end
   end
 end
-
-
-# uncomment and it all works
-

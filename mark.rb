@@ -3,7 +3,7 @@ require 'marky_markov'
 class MGSMarkov
   def initialize
     @markov = MarkyMarkov::TemporaryDictionary.new
-    @markov.parse_file "output2.txt"
+    @markov.parse_file "static/output2.txt"
   end
 
   def make_sentence
