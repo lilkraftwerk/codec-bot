@@ -31,7 +31,7 @@ class MGSTwitter
 
   def select_mentions_less_than_ten_minutes_old
     @mentions = @mentions.select do |mention|
-      mention.created_at > 10.minutes.ago
+      mention.created_at >= 10.minutes.ago
     end
   end
 
