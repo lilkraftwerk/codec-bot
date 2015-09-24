@@ -13,9 +13,8 @@ class CodecCreator
     @first_username = options[:first_username]
     @second_username = options[:second_username]
     @tweet_text = options[:tweet_text]
-    @url = options[:url]
     @client = MGSTwitter.new
-    @markov = MGSMarkov.new
+    # @markov = MGSMarkov.new
   end
 
   def do_it
@@ -93,14 +92,14 @@ class CodecCreator
             self.gravity = Magick::WestGravity
         }
 
-    @url ||= "UNKNOWN URL"
-    text_to_tweet = "#{@url}\nrequested by @#{@first_username}"
+    text_to_tweet = "dril in conversation with @#{@first_username}"
 
     filename = "tmp/#{rand(10000)}.png"
     @codec_background.write(filename)
 
     File.open(filename) do |f|
       puts "locally #{filename}"
+      puts "upload commented out"
       @client.update(text_to_tweet, f)
     end
   end

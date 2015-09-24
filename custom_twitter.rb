@@ -3,7 +3,7 @@ require 'active_support'
 require 'active_support/time'
 require 'pry'
 
-# require_relative 'keys'
+require_relative 'keys'
 
 TWITTER_KEY ||= ENV["TWITTER_KEY"]
 TWITTER_SECRET ||= ENV["TWITTER_SECRET"]
@@ -19,65 +19,54 @@ class MGSTwitter
   end
 
   def do_it
-    get_mentions
-    select_mentions_less_than_ten_minutes_old
-    sort_dms
-    format_results
+    get_dril_tweets
+    select_tweets_less_than_ten_minutes_old
+    remove_replies_and_retweets
+    get_followers
+    pick_one_follower
+    format_tweets
   end
 
-  def get_mentions
-    @mentions = @client.mentions_timeline
+  def format_tweets
+    @tweets.each do |tweet|
+      @results << {
+        first_username: pick_one_follower[:screen_name],
+        second_username: 'dril',
+        tweet_text: tweet.text
+      }
+    end
   end
 
-  def select_mentions_less_than_ten_minutes_old
-    @mentions = @mentions.select do |mention|
+  def select_tweets_less_than_ten_minutes_old
+    @tweets = @tweets.select do |mention|
       mention.created_at >= 10.minutes.ago
     end
   end
 
-  def get_tweet_by_id(id)
-    @client.status(id)
-  end
-
-  def get_tweet_id(url_string)
-    regex = /\/status\/(\d+)/
-    regex.match(url_string).captures.first
-  end
-
-  def has_tweet_id?(url_string)
-    regex = /\/status\/(\d+)/
-    !regex.match(url_string).nil?
-  end
-
-  def get_tweet(id)
-    @client.status(id)
-  end
-
-  def sort_dms
-    @request_tweets = []
-    @mentions.each do |tweet|
-      if tweet.urls?
-        url = tweet.urls.first.expanded_url
-        if has_tweet_id?(url)
-          requester = tweet.user.screen_name
-          id = get_tweet_id(url)
-          @results << {
-            url: url,
-            tweet: get_tweet(id.to_i),
-            first_username: requester
-          }
-        end
-      end
+  def remove_replies_and_retweets
+    @tweets = @tweets.select do |tweet|
+      !tweet.reply? && !tweet.retweet?
     end
   end
 
-  def format_results
-    @results.each do |result|
-      second_user = result[:tweet].user.screen_name
-      text = result[:tweet].text
-      result[:second_username] = second_user
-      result[:tweet_text] = text
+  def select_tweets_less_than_ten_days_old
+    @tweets = @tweets.select do |mention|
+      mention.created_at >= 10.days.ago
     end
+  end
+
+  def get_dril_tweets
+    @tweets = @client.user_timeline("dril")
+  end
+
+  def get_followers
+    @followers = @client.followers
+  end
+
+  def pick_one_follower
+    users = @followers.attrs[:users]
+    rando = rand(users.length)
+    users[rando]
   end
 
   def configure_twitter_client
@@ -91,12 +80,6 @@ class MGSTwitter
 
   def update(text, file)
     @client.update_with_media(text,file)
-  end
-
-  def get_tweets(username)
-    @tweets = @client.user_timeline(username)
-    @username = username
-    @profile_image_url = @tweets.first.user.profile_image_url
   end
 
   def download_avatar(username)
