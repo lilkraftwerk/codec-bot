@@ -1,9 +1,6 @@
 require 'twitter'
 require 'active_support'
 require 'active_support/time'
-require 'pry'
-
-require_relative 'keys'
 
 TWITTER_KEY ||= ENV["TWITTER_KEY"]
 TWITTER_SECRET ||= ENV["TWITTER_SECRET"]
